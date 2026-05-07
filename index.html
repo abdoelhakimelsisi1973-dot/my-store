@@ -4,36 +4,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>المجمع الطبي بشبراملس - مخزن الادوية</title>
-    <link rel="manifest" href="https://api.jsonbin.io/v3/b/66399677e41b4d34e4f01487?meta=false">
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0b3d91">
+
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
     <style>
-        /* سأختصر الـ CSS هنا للحفاظ على المساحة، استخدم نفس التصميم السابق */
-        body { font-family: 'Cairo', sans-serif; background: #f0f2f5; margin: 0; }
-        header { background: #0b3d91; color: #fff; padding: 20px; text-align: center; font-size: 26px; font-weight: 900; display: none; justify-content: space-between; align-items: center; }
+        body { font-family: 'Cairo', sans-serif; background: #f0f2f5; margin: 0; padding-bottom: 50px; }
+        header { background: #0b3d91; color: #fff; padding: 20px; text-align: center; font-size: 24px; font-weight: 900; display: none; justify-content: space-between; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        
         #loginOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0b3d91; display: flex; align-items: center; justify-content: center; z-index: 2000; }
-        .login-box { background: white; padding: 40px; border-radius: 20px; width: 350px; text-align: center; }
-        .container { padding: 25px; max-width: 1200px; margin: auto; display: none; }
-        .buttons { display: flex; gap: 12px; margin-bottom: 25px; flex-wrap: wrap; justify-content: center; }
-        button { padding: 15px 30px; border: none; border-radius: 12px; font-size: 18px; cursor: pointer; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .login-box { background: white; padding: 40px; border-radius: 20px; width: 350px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.3); }
+
+        .container { padding: 20px; max-width: 1100px; margin: auto; display: none; }
+        
+        /* أزرار كبيرة وسهلة الضغط */
+        .buttons { display: flex; gap: 15px; margin-bottom: 30px; flex-wrap: wrap; justify-content: center; }
+        button { padding: 18px 35px; border: none; border-radius: 12px; font-size: 18px; cursor: pointer; font-weight: bold; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         .add { background: #28a745; color: #fff; }
         .out { background: #dc3545; color: #fff; }
         .adj { background: #17a2b8; color: #fff; }
-        input[type="text"], input[type="password"], input[type="number"], input[type="date"] { padding: 15px; border-radius: 10px; border: 2px solid #ddd; width: 100%; margin-bottom: 15px; box-sizing: border-box; font-family: 'Cairo'; font-size: 16px; }
-        table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 15px; overflow: hidden; box-shadow: 0 0 15px rgba(0,0,0,0.05); }
-        th, td { padding: 18px; border-bottom: 1px solid #eee; text-align: center; }
-        th { background: #0b3d91; color: #fff; }
+        .reset { background: #e67e22; color: #fff; font-size: 14px; }
+        .logout-btn { background: #fff; color: #dc3545; font-size: 14px; padding: 10px 20px; }
+
+        input { padding: 15px; border-radius: 10px; border: 2px solid #ddd; width: 100%; margin-bottom: 15px; box-sizing: border-box; font-family: 'Cairo'; font-size: 17px; }
+        input:focus { border-color: #0b3d91; outline: none; box-shadow: 0 0 8px rgba(11,61,145,0.2); }
+
+        table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 15px; overflow: hidden; box-shadow: 0 0 20px rgba(0,0,0,0.05); }
+        th, td { padding: 15px; border-bottom: 1px solid #eee; text-align: center; }
+        th { background: #0b3d91; color: #fff; font-size: 18px; }
+
+        .low-stock { background: #fff5f5; color: #dc3545; font-weight: bold; }
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 1000; }
+        .modal-content { background: #fff; padding: 30px; border-radius: 20px; width: 450px; position: relative; }
+        
         .report-section { background: #fff; padding: 25px; border-radius: 15px; margin-bottom: 30px; border: 1px solid #ddd; }
-        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 1000; }
-        .modal-content { background: #fff; padding: 30px; border-radius: 20px; width: 450px; }
     </style>
 </head>
 <body>
 
 <div id="loginOverlay">
     <div class="login-box">
-        <h2 style="color: #0b3d91;">دخول النظام</h2>
+        <h2 style="color: #0b3d91; margin-bottom: 20px;">نظام مخزن المجمع</h2>
         <input type="text" id="userInp" placeholder="اسم المستخدم">
         <input type="password" id="passInp" placeholder="كلمة المرور" onkeydown="if(event.key==='Enter') checkLogin()">
         <button onclick="checkLogin()" style="width: 100%; background: #0b3d91; color: white;">دخول</button>
@@ -42,40 +57,47 @@
 
 <header id="mainHeader">
     <div>المجمع الطبي بشبراملس - مخزن الادوية</div>
-    <button onclick="logout()" style="background:#fff; color:#dc3545; font-size:14px; padding:10px 20px;">🔐 خروج</button>
+    <button class="logout-btn" onclick="logout()">🔐 خروج</button>
 </header>
 
 <div class="container" id="mainContainer">
     <div class="buttons">
-        <button class="add" onclick="openModal('in')">➕ وارد جديد</button>
-        <button class="out" onclick="openModal('out')">➖ صرف صادر</button>
-        <button class="adj" onclick="openModal('adj')">⚖️ جرد الرصيد</button>
+        <button class="add" onclick="openModal('in')">➕ وارد</button>
+        <button class="out" onclick="openModal('out')">➖ صادر</button>
+        <button class="adj" onclick="openModal('adj')">⚖️ جرد</button>
         <button style="background:#6f42c1; color:#fff;" onclick="exportExcel()">📥 Excel</button>
-        <button style="background:#fd7e14; color:#fff;" onclick="generateReport()">📸 تقرير اليوم</button>
+        <button class="reset" onclick="clearAllData()">⚠️ تصفير</button>
     </div>
 
-    <div id="reportArea" class="report-section" style="display:none;">
-        <h3 style="text-align: center; color: #0b3d91;">📊 تقرير الحركة <span id="repD"></span></h3>
-        <table id="reportTable">
-            <thead><tr><th>الوقت</th><th>الصنف</th><th>الكمية</th><th>الحركة</th></tr></thead>
+    <div id="reportArea" class="report-section">
+        <h3 style="text-align: center; color: #0b3d91;">📊 تقرير الحركة اليومية</h3>
+        <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 20px;">
+            <input type="date" id="reportDate" style="width: 250px; margin: 0;">
+            <button style="background:#0b3d91; color:#fff;" onclick="generateReport()">عرض</button>
+            <button id="btnCapture" style="background:#fd7e14; color:#fff; display:none;" onclick="captureReport()">📸 حفظ كصورة</button>
+        </div>
+        <table id="reportTable" style="display: none;">
+            <thead><tr><th>الوقت</th><th>الصنف</th><th>الكمية</th><th>النوع</th></tr></thead>
             <tbody id="reportBody"></tbody>
         </table>
-        <button onclick="captureReport()" style="width:100%; margin-top:10px; background:#fd7e14; color:#fff;">حفظ كصورة</button>
     </div>
 
-    <input type="text" id="search" placeholder="🔍 ابحث هنا..." onkeyup="renderTable()">
+    <input type="text" id="search" placeholder="🔍 ابحث عن دواء..." onkeyup="renderTable()">
+
     <table>
-        <thead><tr><th>الباركود</th><th>اسم الصنف</th><th>الرصيد</th><th>الحالة</th><th>إدارة</th></tr></thead>
+        <thead>
+            <tr><th>الباركود</th><th>اسم الصنف</th><th>الرصيد</th><th>الحالة</th><th>حذف</th></tr>
+        </thead>
         <tbody id="tableBody"></tbody>
     </table>
 </div>
 
 <div class="modal" id="modal">
     <div class="modal-content">
-        <h3 id="modalTitle" style="text-align: center; color: #0b3d91;"></h3>
-        <input type="text" id="barcode" placeholder="امسح الباركود..." oninput="handleBarcode(this.value)" onkeydown="if(event.key==='Enter') document.getElementById('qty').focus()">
+        <h3 id="modalTitle" style="text-align: center; color: #0b3d91; margin-top:0;"></h3>
+        <input type="text" id="barcode" placeholder="امسح الباركود" oninput="handleBarcode(this.value)" onkeydown="if(event.key==='Enter') document.getElementById('qty').focus()">
         <span id="statusMsg" style="font-size:13px; display:block; margin-bottom:10px; color:#0b3d91; font-weight:bold;"></span>
-        <input type="text" id="name" placeholder="اسم الدواء">
+        <input type="text" id="name" placeholder="اسم الصنف">
         <input type="number" id="qty" placeholder="الكمية" onkeydown="if(event.key==='Enter') save()">
         <button onclick="save()" style="width:100%; background:#28a745; color:#fff; font-size:20px;">حفظ (Enter)</button>
         <button onclick="closeModal()" style="width:100%; margin-top:10px; background:#ccc;">إلغاء</button>
@@ -83,9 +105,9 @@
 </div>
 
 <script>
-    // تسجيل الـ Service Worker برابط خارجي لإقناع PWABuilder بالعمل
+    // تفعيل العمل بدون إنترنت للبرنامج PWA
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('https://cdn.jsdelivr.net/npm/pwa-helper-components@0.2.1/pwa-register.js');
+        navigator.serviceWorker.register('sw.js');
     }
 
     const VALID_USER = "admin", VALID_PASS = "123";
@@ -99,7 +121,7 @@
             document.getElementById('mainHeader').style.display = 'flex';
             sessionStorage.setItem('isLogged', 'true');
             renderTable();
-        } else { alert("خطأ!"); }
+        } else { alert("بيانات خاطئة!"); }
     }
 
     if(sessionStorage.getItem('isLogged') === 'true') {
@@ -111,24 +133,32 @@
     function logout() { sessionStorage.removeItem('isLogged'); location.reload(); }
 
     function openModal(t) {
-        currentMode = t; document.getElementById('modal').style.display = 'flex';
-        document.getElementById('modalTitle').innerText = t === 'in' ? 'وارد' : (t === 'out' ? 'صادر' : 'جرد');
+        currentMode = t;
+        document.getElementById('modal').style.display = 'flex';
+        document.getElementById('modalTitle').innerText = t === 'in' ? 'وارد جديد' : (t === 'out' ? 'صرف صادر' : 'جرد رصيد');
         setTimeout(() => document.getElementById('barcode').focus(), 100);
     }
 
     function closeModal() { document.getElementById('modal').style.display = 'none'; clearForm(); }
-    function clearForm() { document.getElementById('barcode').value=''; document.getElementById('name').value=''; document.getElementById('qty').value=''; document.getElementById('statusMsg').innerText=''; }
+    function clearForm() { 
+        document.getElementById('barcode').value=''; document.getElementById('name').value=''; 
+        document.getElementById('qty').value=''; document.getElementById('statusMsg').innerText='';
+    }
 
     async function handleBarcode(val) {
         const b = val.trim();
         if (items[b]) {
             document.getElementById('name').value = items[b].name;
-            document.getElementById('statusMsg').innerText = `📦 الرصيد: ${items[b].qty}`;
+            document.getElementById('statusMsg').innerText = `📦 الرصيد الحالي: ${items[b].qty}`;
         } else if (b.length >= 8) {
+            document.getElementById('statusMsg').innerText = "🔍 جاري البحث...";
             try {
                 const res = await fetch(`https://world.openfoodfacts.org/api/v0/product/${b}.json`);
                 const data = await res.json();
-                if(data.status === 1) document.getElementById('name').value = data.product.product_name || "";
+                if(data.status === 1) {
+                    document.getElementById('name').value = data.product.product_name || "";
+                    document.getElementById('statusMsg').innerText = "✅ تم العثور على الاسم";
+                }
             } catch(e) {}
         }
     }
@@ -137,10 +167,16 @@
         const b = document.getElementById('barcode').value.trim(), n = document.getElementById('name').value.trim(), q = parseInt(document.getElementById('qty').value);
         if(!b || !n || isNaN(q)) return;
         if(!items[b]) items[b] = {name: n, qty: 0};
+        
+        let typeLabel = currentMode === 'in' ? 'وارد' : (currentMode === 'out' ? 'صادر' : 'جرد');
         if(currentMode === 'adj') items[b].qty = q;
         else if(currentMode === 'in') items[b].qty += q;
-        else { if(items[b].qty < q) return alert('الرصيد لا يكفي'); items[b].qty -= q; }
-        movements.push({date: new Date().toLocaleDateString('ar-EG'), time: new Date().toLocaleTimeString('ar-EG'), b, n, q, type: currentMode});
+        else {
+            if(items[b].qty < q) return alert('الرصيد لا يكفي!');
+            items[b].qty -= q;
+        }
+
+        movements.push({date: new Date().toLocaleDateString('ar-EG'), time: new Date().toLocaleTimeString('ar-EG'), b, n, q, type: typeLabel});
         localStorage.setItem('items', JSON.stringify(items));
         localStorage.setItem('movements', JSON.stringify(movements));
         closeModal(); renderTable();
@@ -151,23 +187,27 @@
         let html = '';
         for (let b in items) {
             if (b.includes(s) || items[b].name.toLowerCase().includes(s)) {
-                html += `<tr><td>${b}</td><td>${items[b].name}</td><td>${items[b].qty}</td><td>${items[b].qty < 5 ? '⚠️' : '✅'}</td>
-                <td><button onclick="deleteItem('${b}')">🗑️</button></td></tr>`;
+                let low = items[b].qty < 5;
+                html += `<tr class="${low ? 'low-stock' : ''}">
+                    <td>${b}</td><td>${items[b].name}</td><td>${items[b].qty}</td>
+                    <td>${low ? '⚠️ ناقص' : '✅'}</td>
+                    <td><button onclick="deleteItem('${b}')" style="background:none; color:red; box-shadow:none;">🗑️</button></td></tr>`;
             }
         }
         tbody.innerHTML = html;
     }
 
     function generateReport() {
-        const today = new Date().toLocaleDateString('ar-EG');
-        document.getElementById('repD').innerText = today;
-        const tbody = document.getElementById('reportBody');
+        const d = document.getElementById('reportDate').value;
+        if(!d) return alert("اختر التاريخ");
+        const tbody = document.getElementById('reportBody'), formattedDate = new Date(d).toLocaleDateString('ar-EG');
         let html = '';
         movements.forEach(m => {
-            if(m.date === today) html += `<tr><td>${m.time}</td><td>${m.n}</td><td>${m.q}</td><td>${m.type}</td></tr>`;
+            if(m.date === formattedDate) html += `<tr><td>${m.time}</td><td>${m.n}</td><td>${m.q}</td><td>${m.type}</td></tr>`;
         });
-        tbody.innerHTML = html || '<tr><td colspan="4">لا توجد حركات اليوم</td></tr>';
-        document.getElementById('reportArea').style.display = 'block';
+        tbody.innerHTML = html || '<tr><td colspan="4">لا توجد حركات</td></tr>';
+        document.getElementById('reportTable').style.display = 'table';
+        document.getElementById('btnCapture').style.display = 'inline-block';
     }
 
     function captureReport() {
@@ -179,11 +219,12 @@
         });
     }
 
-    function deleteItem(b) { if(confirm("حذف؟")) { delete items[b]; localStorage.setItem('items', JSON.stringify(items)); renderTable(); } }
+    function deleteItem(b) { if(confirm("حذف الصنف؟")) { delete items[b]; localStorage.setItem('items', JSON.stringify(items)); renderTable(); } }
+    function clearAllData() { if(confirm("مسح كل البيانات؟")) { localStorage.clear(); location.reload(); } }
     function exportExcel() { 
         const ws = XLSX.utils.json_to_sheet(movements);
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Data");
+        XLSX.utils.book_append_sheet(wb, ws, "Inventory");
         XLSX.writeFile(wb, "مخزن_المجمع.xlsx");
     }
     renderTable();
